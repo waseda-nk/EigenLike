@@ -169,8 +169,9 @@ namespace el {
 			_data = new T*[_cols];
 			for (int i = 0; i < _cols; ++i) {
 				_data[i] = new T[_rows];
+				for (int j = 0; j < _rows; ++j)
+					_data[i][j] = 0;
 			}
-			zero();
 		}
 		/**
 		 * @brief  destructor
@@ -186,24 +187,38 @@ namespace el {
 			initializer(matrix<T, Rows, Cols>& _m, int _i) : m(_m), i(_i) {
 				if (i > Rows*Cols) throw("Out of range");
 			}
-			initializer operator,(T x) {
+			initializer operator,(const T x) {
 				m._data[i/m.rows()][i%m.cols()] = x;
 				return initializer(m, i + 1);
 			}
 		};
-		initializer operator<<(T x) {
+		initializer operator<<(const T x) {
 			_data[0][0] = x;
 			return initializer(*this, 1);
 		}
 
-		T& operator()(int x, int y) { return _data[x][y]; }
-		const T operator()(int x, int y) const { return _data[x][y]; }
-		T* operator[](int idx) { return _data[idx]; }
+		/**
+		 * @fn     T& operator()(int x, int y)
+		 * @return matrix(x,y)
+		 */
+		T& operator()(const int x, const int y) { return _data[x][y]; }
+
+		/**
+		 * @fn     const T operator()(int x, int y) const
+		 * @return matrix(x,y)
+		 */
+		const T operator()(const int x, const int y) const { return _data[x][y]; }
+
+		/**
+		 * @fn     T* operator[](int idx)
+		 * @return matrix[idx]
+		 */
+		T* operator[](int idx) const { return _data[idx]; }
 
 		/**
 		 * @brief  output stream
 		 */
-		friend std::ostream& operator<<(std::ostream& os, matrix<T, Rows, Cols>& m) {
+		friend std::ostream& operator<<(std::ostream& os, const matrix m) {
 			os << "[";
 			for (int i = 0; i < m.rows(); ++i) {
 				if (i != 0)
@@ -225,40 +240,76 @@ namespace el {
 		}
 
 		/**
+		 * @fn     friend matrix operator+(const matrix& m1, const matrix& m2)
+		 * @param[in] m1 left matrix
+		 * @param[in] m2 right matrix
+		 * @return sum of two matrices
+		 */
+		friend matrix operator+(const matrix& m1, const matrix& m2) {
+			if (m1.rows() != m2.rows() && m1.cols() != m2.cols())
+				throw("Not same size");
+			matrix<T, Rows, Cols> r;
+			for (int i = 0; i < m1.rows(); ++i)
+				for (int j = 0; j < m1.cols(); ++j)
+					r[i][j] = m1[i][j] + m2[i][j];
+			return r;
+		}
+
+		/**
+		 * @fn     friend matrix operator-(const matrix& m1, const matrix& m2)
+		 * @param[in] m1 left matrix
+		 * @param[in] m2 right matrix
+		 * @return diff of two matrices
+		 */
+		friend matrix operator-(const matrix& m1, const matrix& m2) {
+			if (m1.rows() != m2.rows() && m1.cols() != m2.cols())
+				throw("Not same size");
+			matrix<T, Rows, Cols> r;
+			for (int i = 0; i < m1.rows(); ++i)
+				for (int j = 0; j < m1.cols(); ++j)
+					r[i][j] = m1[i][j] - m2[i][j];
+			return r;
+		}
+
+		/**
 		 * @fn     void zero()
 		 * @brief  zero matrix
 		 */
-		void zero() {
-			for (int i = 0; i < _rows; ++i)
-				for (int j = 0; j< _cols; ++j)
-					_data[i][j] = 0;
+		static matrix<T, Rows, Cols> zero() {
+			matrix<T, Rows, Cols> m;
+			for (int i = 0; i < Rows; ++i)
+				for (int j = 0; j < Cols; ++j)
+					m[i][j] = 0;
+			return m;
 		}
 		/**
 		 * @fn     void identity()
 		 * @brief  identity matrix
 		 */
-		void identity() {
-			if (_rows != _cols) throw("Out of range");
-			this->zero();
-			for (int i = 0; i < _cols; ++i)
-				_data[i][i] = 1;
+		static matrix<T, Rows, Cols> identity(T n = 1) {
+			if (Rows != Cols) throw("Out of range");
+			matrix<T, Rows, Cols> m;
+			m = matrix<T, Rows, Cols>::zero();
+			for (int i = 0; i < Cols; ++i)
+				m[i][i] = n;
+			return m;
 		}
 
 		/**
 		 * @fn     int size()
 		 * @return matrix size
 		 */
-		int size() { return _rows * _cols; }
+		const int size() const { return _rows * _cols; }
 		/**
 		 * @fn     int rows()
 		 * @return number of matrix rows
 		 */
-		int rows() { return _rows; }
+		const int rows() const { return _rows; }
 		/**
 		 * @fn     int cols()
 		 * @return number of matrix cols
 		 */
-		int cols() { return _cols; }
+		const int cols() const { return _cols; }
 	};
 
 	/**
@@ -275,8 +326,11 @@ namespace el {
 			this->_data = new T*[this->_cols];
 			for (int i = 0; i < this->_cols; ++i) {
 				this->_data[i] = new T[this->_rows];
+				for (int j = 0; j < this->_rows; ++j)
+					this->_data[i][j] = 0;
 			}
-			this->identity();
+			for (int i = 0; i < this->_cols; ++i)
+				this->_data[i][i] = 0;
 		}
 
 		/**
