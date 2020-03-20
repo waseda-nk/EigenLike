@@ -269,6 +269,17 @@ namespace el {
 	struct K : public matrix<T, 3, 3> {
 	public:
 		/**
+		 * @brief  constructor
+		 */
+		K() {
+			this->_data = new T*[this->_cols];
+			for (int i = 0; i < this->_cols; ++i) {
+				this->_data[i] = new T[this->_rows];
+			}
+			this->identity();
+		}
+
+		/**
 		 * @fn        T& fx()
 		 * @return    focal length of x axis
 		 */
