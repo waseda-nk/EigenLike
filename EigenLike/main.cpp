@@ -42,7 +42,14 @@ int main(void) {
 
 	std::cout << "m = " << std::endl << m << std::endl;
 	m *= m;
-	std::cout << "m *= m" << std::endl << "m =" << std::endl << m << std::endl;
+	std::cout << "m *= m" << std::endl << "m =" << std::endl << m << std::endl << std::endl;
+
+	el::matrix<double, 3, 3> zero, identity, exchange, ones, hilbelt;
+	std::cout << "zero = " << std::endl << zero.zero() << std::endl;
+	std::cout << "identity = " << std::endl << identity.identity() << std::endl;
+	std::cout << "exchange = " << std::endl << exchange.exchange() << std::endl;
+	std::cout << "ones = " << std::endl << ones.ones() << std::endl;
+	std::cout << "hilbelt = " << std::endl << hilbelt.hilbelt() << std::endl<< std::endl;
 
 	el::K<double> k;
 	std::cout << "K = " << std::endl << k << std::endl;

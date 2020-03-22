@@ -24,6 +24,14 @@ namespace el {
 				_data[i] = (T)0;
 		}
 		/**
+		 * @brief  constructor
+		 */
+		vector(T ) : _size(Size) {
+			_data = new T[_size];
+			for (int i = 0; i < _size; ++i)
+				_data[i] = (T)0;
+		}
+		/**
 		 * @brief  destructor
 		 */
 		~vector() {}
@@ -145,6 +153,27 @@ namespace el {
 		 * @return w
 		 */
 		const T w() const noexcept { return _data[3]; }
+
+		/**
+		 * @fn     void zero()
+		 * @brief  zero vector
+		 */
+		static vector<T, Size> zero() {
+			vector<T, Size> v;
+			for (int i = 0; i < Size; ++i)
+				v[i] = 0;
+			return v;
+		}
+		/**
+		 * @fn     void ones()
+		 * @brief  vector of ones
+		 */
+		static vector<T, Size> ones(T n = 1) {
+			vector<T, Size> v;
+			for (int i = 0; i < Size; ++i)
+				v[i] = n;
+			return v;
+		}
 	protected:
 		int _size;  /**< vector size */
 		T *_data;   /**< stored vector data */
@@ -192,6 +221,11 @@ namespace el {
 				return initializer(m, i + 1);
 			}
 		};
+		/**
+		 * @fn        initializer operator<<(T x)
+		 * @param[in] x element number
+		 * @return    element
+		 */
 		initializer operator<<(const T x) {
 			_data[0][0] = x;
 			return initializer(*this, 1);
@@ -258,7 +292,7 @@ namespace el {
 		/**
 		 * @fn     inline matrix& operator+=(const matrix& m)
 		 * @param[in] m right matrix
-		 * @return sum of number and matrix
+		 * @return sum of two matrices
 		 */
 		inline matrix& operator+=(const matrix& m) {
 			if (_rows != m.rows() && _cols != m.cols())
@@ -288,7 +322,7 @@ namespace el {
 		/**
 		 * @fn     inline matrix& operator-=(const matrix& m)
 		 * @param[in] m right matrix
-		 * @return diff of number and matrix
+		 * @return diff of two matrices
 		 */
 		inline matrix& operator-=(const matrix& m) {
 			if (_rows != m.rows() && _cols != m.cols())
@@ -432,11 +466,46 @@ namespace el {
 		 * @brief  identity matrix
 		 */
 		static matrix<T, Rows, Cols> identity(T n = 1) {
-			if (Rows != Cols) throw("Out of range");
+			if (Rows != Cols) throw("Not square matrix");
 			matrix<T, Rows, Cols> m;
 			m = matrix<T, Rows, Cols>::zero();
-			for (int i = 0; i < Cols; ++i)
+			for (int i = 0; i < Rows; ++i)
 				m[i][i] = n;
+			return m;
+		}
+		/**
+		 * @fn     void exchange()
+		 * @brief  exchange matrix
+		 */
+		static matrix<T, Rows, Cols> exchange(T n = 1) {
+			if (Rows != Cols) throw("Not square matrix");
+			matrix<T, Rows, Cols> m;
+			m = matrix<T, Rows, Cols>::zero();
+			for (int i = 0; i < Rows; ++i)
+				m[i][Rows-i-1] = n;
+			return m;
+		}
+		/**
+		 * @fn     void ones()
+		 * @brief  matrix of ones
+		 */
+		static matrix<T, Rows, Cols> ones(T n = 1) {
+			matrix<T, Rows, Cols> m;
+			for (int i = 0; i < Rows; ++i)
+				for (int j = 0; j < Cols; ++j)
+					m[i][j] = n;
+			return m;
+		}
+		/**
+		 * @fn     void hilbelt()
+		 * @brief  hilbelt matrix
+		 */
+		static matrix<T, Rows, Cols> hilbelt(T n = 1) {
+			if (Rows != Cols) throw("Not square matrix");
+			matrix<T, Rows, Cols> m;
+			for (int i = 0; i < Rows; ++i)
+				for (int j = 0; j < Cols; ++j)
+					m[i][j] = n / (i + j + 1);
 			return m;
 		}
 
