@@ -29,7 +29,7 @@ namespace el {
 		~vector() {}
 
 		/**
-		 * @struct initializer  
+		 * @struct initializer
 		 */
 		struct initializer {
 			vector<T, Size>& v;
@@ -256,6 +256,20 @@ namespace el {
 		}
 
 		/**
+		 * @fn     inline matrix& operator+=(const matrix& m)
+		 * @param[in] m right matrix
+		 * @return sum of number and matrix
+		 */
+		inline matrix& operator+=(const matrix& m) {
+			if (_rows != m.rows() && _cols != m.cols())
+				throw("Not same size");
+			for (int i = 0; i < _rows; ++i)
+				for (int j = 0; j < _cols; ++j)
+					_data[i][j] += m[i][j];
+			return *this;
+		}
+
+		/**
 		 * @fn     friend matrix operator-(const matrix& m1, const matrix& m2)
 		 * @param[in] m1 left matrix
 		 * @param[in] m2 right matrix
@@ -269,6 +283,137 @@ namespace el {
 				for (int j = 0; j < m1.cols(); ++j)
 					r[i][j] = m1[i][j] - m2[i][j];
 			return r;
+		}
+
+		/**
+		 * @fn     inline matrix& operator-=(const matrix& m)
+		 * @param[in] m right matrix
+		 * @return diff of number and matrix
+		 */
+		inline matrix& operator-=(const matrix& m) {
+			if (_rows != m.rows() && _cols != m.cols())
+				throw("Not same size");
+			for (int i = 0; i < _rows; ++i)
+				for (int j = 0; j < _cols; ++j)
+					_data[i][j] -= m[i][j];
+			return *this;
+		}
+
+		/**
+		 * @fn     friend matrix operator*(const T& n, const matrix& m)
+		 * @param[in] n left variable
+		 * @param[in] m right matrix
+		 * @return mul of number and matrix
+		 */
+		 friend matrix operator*(const T& n, const matrix& m) {
+			matrix<T, Rows, Cols> r;
+			for (int i = 0; i < m.rows(); ++i)
+				for (int j = 0; j < m.cols(); ++j)
+					r[i][j] = n * m[i][j];
+			return r;
+		}
+
+		/**
+		 * @fn     friend matrix operator*(const matrix& m, const T& n)
+		 * @param[in] m left matrix
+		 * @param[in] n right variable
+		 * @return mul of number and matrix
+		 */
+		 friend matrix operator*(const matrix& m, const T& n) {
+			matrix<T, Rows, Cols> r;
+			for (int i = 0; i < m.rows(); ++i)
+				for (int j = 0; j < m.cols(); ++j)
+					r[i][j] = n * m[i][j];
+			return r;
+		}
+
+		/**
+		 * @fn     inline matrix& operator*=(const T& n)
+		 * @param[in] n right variable
+		 * @return mul of number and matrix
+		 */
+		inline matrix& operator*=(const T& n) {
+			for (int i = 0; i < _rows; ++i)
+				for (int j = 0; j < _cols; ++j)
+					_data[i][j] *= n;
+			return *this;
+		}
+
+		/**
+		 * @fn     friend matrix operator*(const matrix& m1, const matrix& m2)
+		 * @param[in] m1 left matrix
+		 * @param[in] m2 right matrix
+		 * @return mul of two matrices
+		 */
+		friend matrix operator*(const matrix& m1, const matrix& m2) {
+			if (m1.cols() != m2.rows())
+				throw("Left matrix rows is not same Right matrix cols");
+			matrix<T, Rows, Cols> r;
+			for (int i = 0; i < m1.rows(); ++i)
+				for (int j = 0; j < m2.cols(); ++j)
+					for (int k = 0; k < m1.cols(); ++k)
+						r[i][j] += m1[i][k] * m2[k][j];
+			return r;
+		}
+
+		/**
+		 * @fn     inline matrix& operator*=(const matrix& m)
+		 * @param[in] m right matrix
+		 * @return mul of two matrices
+		 */
+		inline matrix& operator*=(const matrix& m) {
+			if (_cols != m.rows())
+				throw("Left matrix rows is not same Right matrix cols");
+			matrix<T, Rows, Cols> r;
+			for (int i = 0; i < _rows; ++i)
+				for (int j = 0; j < m.cols(); ++j)
+					for (int k = 0; k < _cols; ++k)
+						r[i][j] += _data[i][k] * m[k][j];
+			*this = r;
+			return *this;
+		}
+
+		/**
+		 * @fn     friend matrix operator*=(const matrix& m1, const matrix& m2)
+		 * @param[in] m1 left matrix
+		 * @param[in] m2 right matrix
+		 * @return mul of two matrices
+		 */
+		friend matrix operator*=(const matrix& m1, const matrix& m2) {
+			if (m1.cols() != m2.rows())
+				throw("Left matrix rows is not same Right matrix cols");
+			matrix<T, Rows, Cols> r;
+			for (int i = 0; i < m1.rows(); ++i)
+				for (int j = 0; j < m2.cols(); ++j)
+					for (int k=0;k< m1.cols(); ++k)
+						r[i][j] += m1[i][k] * m2[k][j];
+			return r;
+		}
+
+		/**
+		 * @fn     friend matrix operator.(const matrix& m1, const matrix& m2)
+		 * @param[in] m left matrix
+		 * @param[in] n right variable
+		 * @return div of matrix and number
+		 */
+		friend matrix operator/(const matrix& m, const T& n) {
+			matrix<T, Rows, Cols> r;
+			for (int i = 0; i < m.rows(); ++i)
+				for (int j = 0; j < m.cols(); ++j)
+					r[i][j] = m[i][j] / n;
+			return r;
+		}
+
+		/**
+		 * @fn     inline matrix& operator/=(const T& n)
+		 * @param[in] n right variable
+		 * @return div of number and matrix
+		 */
+		inline matrix& operator/=(const T& n) {
+			for (int i = 0; i < _rows; ++i)
+				for (int j = 0; j < _cols; ++j)
+					_data[i][j] /= n;
+			return *this;
 		}
 
 		/**
@@ -330,7 +475,7 @@ namespace el {
 					this->_data[i][j] = 0;
 			}
 			for (int i = 0; i < this->_cols; ++i)
-				this->_data[i][i] = 0;
+				this->_data[i][i] = 1;
 		}
 
 		/**
