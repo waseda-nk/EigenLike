@@ -22,7 +22,7 @@ namespace el {
 		vector() : _size(Size) {
 			_data = new T[_size];
 			for (int i = 0; i < _size; ++i)
-				_data[i] = (T)0;
+				_data[i] = T(0);
 		}
 		/**
 		 * @brief  constructor
@@ -30,7 +30,7 @@ namespace el {
 		vector(T ) : _size(Size) {
 			_data = new T[_size];
 			for (int i = 0; i < _size; ++i)
-				_data[i] = (T)0;
+				_data[i] = T(0);
 		}
 		/**
 		 * @brief  destructor
@@ -162,7 +162,7 @@ namespace el {
 		static vector<T, Size> zero() {
 			vector<T, Size> v;
 			for (int i = 0; i < Size; ++i)
-				v[i] = 0;
+				v[i] = T(0);
 			return v;
 		}
 		/**
@@ -200,7 +200,7 @@ namespace el {
 			for (int i = 0; i < _cols; ++i) {
 				_data[i] = new T[_rows];
 				for (int j = 0; j < _rows; ++j)
-					_data[i][j] = 0;
+					_data[i][j] = T(0);
 			}
 		}
 		/**
@@ -286,7 +286,7 @@ namespace el {
 			matrix<T, Rows, Cols> r;
 			for (int i = 0; i < m1.cols(); ++i)
 				for (int j = 0; j < m1.rows(); ++j)
-					r[i][j] = m1[i][j] + m2[i][j];
+					r[i][j] = T(m1[i][j]) + T(m2[i][j]);
 			return r;
 		}
 
@@ -300,7 +300,7 @@ namespace el {
 				throw std::logic_error("Not same size");
 			for (int i = 0; i < _cols; ++i)
 				for (int j = 0; j < _rows; ++j)
-					_data[i][j] += m[i][j];
+					_data[i][j] += T(m[i][j]);
 			return *this;
 		}
 
@@ -316,7 +316,7 @@ namespace el {
 			matrix<T, Rows, Cols> r;
 			for (int i = 0; i < m1.cols(); ++i)
 				for (int j = 0; j < m1.rows(); ++j)
-					r[i][j] = m1[i][j] - m2[i][j];
+					r[i][j] = T(m1[i][j]) - T(m2[i][j]);
 			return r;
 		}
 
@@ -330,7 +330,7 @@ namespace el {
 				throw std::logic_error("Not same size");
 			for (int i = 0; i < _cols; ++i)
 				for (int j = 0; j < _rows; ++j)
-					_data[i][j] -= m[i][j];
+					_data[i][j] -= T(m[i][j]);
 			return *this;
 		}
 
@@ -344,7 +344,7 @@ namespace el {
 			matrix<T, Rows, Cols> r;
 			for (int i = 0; i < m.cols(); ++i)
 				for (int j = 0; j < m.rows(); ++j)
-					r[i][j] = n * m[i][j];
+					r[i][j] = n * T(m[i][j]);
 			return r;
 		}
 
@@ -358,7 +358,7 @@ namespace el {
 			matrix<T, Rows, Cols> r;
 			for (int i = 0; i < m.cols(); ++i)
 				for (int j = 0; j < m.rows(); ++j)
-					r[i][j] = n * m[i][j];
+					r[i][j] = n * T(m[i][j]);
 			return r;
 		}
 
@@ -387,7 +387,7 @@ namespace el {
 			for (int i = 0; i < m1.rows(); ++i)
 				for (int j = 0; j < m2.cols(); ++j)
 					for (int k = 0; k < m1.cols(); ++k)
-						r[i][j] += m1[i][k] * m2[k][j];
+						r[i][j] += T(m1[i][k]) * T(m2[k][j]);
 			return r;
 		}
 
@@ -403,7 +403,7 @@ namespace el {
 			for (int i = 0; i < _rows; ++i)
 				for (int j = 0; j < m.cols(); ++j)
 					for (int k = 0; k < _cols; ++k)
-						r[i][j] += _data[i][k] * m[k][j];
+						r[i][j] += _data[i][k] * T(m[k][j]);
 			*this = r;
 			return *this;
 		}
@@ -421,7 +421,7 @@ namespace el {
 			for (int i = 0; i < m1.rows(); ++i)
 				for (int j = 0; j < m2.cols(); ++j)
 					for (int k = 0; k <  m1.cols(); ++k)
-						r[i][j] += m1[i][k] * m2[k][j];
+						r[i][j] += T(m1[i][k]) * T(m2[k][j]);
 			return r;
 		}
 
@@ -435,7 +435,7 @@ namespace el {
 			matrix<T, Rows, Cols> r;
 			for (int i = 0; i < m.cols(); ++i)
 				for (int j = 0; j < m.rows(); ++j)
-					r[i][j] = m[i][j] / n;
+					r[i][j] = T(m[i][j]) / n;
 			return r;
 		}
 
@@ -459,7 +459,7 @@ namespace el {
 			matrix<T, Rows, Cols> m;
 			for (int i = 0; i < Cols; ++i)
 				for (int j = 0; j < Rows; ++j)
-					m[i][j] = 0;
+					m[i][j] = T(0);
 			return m;
 		}
 		/**
@@ -506,7 +506,24 @@ namespace el {
 			matrix<T, Rows, Cols> m;
 			for (int i = 0; i < Cols; ++i)
 				for (int j = 0; j < Rows; ++j)
-					m[i][j] = n / (i + j + 1);
+					m[i][j] = n / (T(i) + T(j) + T(1));
+			return m;
+		}
+		/**
+		 * @fn     void lehmer()
+		 * @brief  lehmer matrix
+		 */
+		static matrix<T, Rows, Cols> lehmer() {
+			if (Rows != Cols) throw std::logic_error("Not square matrix");
+			matrix<T, Rows, Cols> m;
+			for (int i = 0; i < Cols; ++i)
+				for (int j = 0; j < Rows; ++j){
+					if (j >= i){
+						m[i][j] = (T(i) + T(1)) / (T(j) + T(1));
+					}else{
+						m[i][j] = (T(j) + T(1)) / (T(i) + T(1));
+					}
+				}
 			return m;
 		}
 
@@ -542,10 +559,10 @@ namespace el {
 			for (int i = 0; i < this->_cols; ++i) {
 				this->_data[i] = new T[this->_rows];
 				for (int j = 0; j < this->_rows; ++j)
-					this->_data[i][j] = 0;
+					this->_data[i][j] = T(0);
 			}
 			for (int i = 0; i < this->_cols; ++i)
-				this->_data[i][i] = 1;
+				this->_data[i][i] = T(1);
 		}
 
 		/**
