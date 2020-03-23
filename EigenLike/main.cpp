@@ -2,7 +2,7 @@
 #include <eigen3/Eigen/Core>
 #include <iostream>
 
-int main(void) {
+int main(void) try {
 	el::vector<double,3> v;
 	double a = 1;
 	v << 2, 3, 4;
@@ -44,7 +44,7 @@ int main(void) {
 	m *= m;
 	std::cout << "m *= m" << std::endl << "m =" << std::endl << m << std::endl << std::endl;
 
-	el::matrix<double, 3, 3> zero, identity, exchange, ones, hilbelt;
+	el::matrix<double, 4, 2> zero, identity, exchange, ones, hilbelt;
 	std::cout << "zero = " << std::endl << zero.zero() << std::endl;
 	std::cout << "identity = " << std::endl << identity.identity() << std::endl;
 	std::cout << "exchange = " << std::endl << exchange.exchange() << std::endl;
@@ -61,4 +61,7 @@ int main(void) {
 	k.identity();
 	std::cout << "K = " << std::endl << k << std::endl;
 	std::cout << "K size = " << k.size() << std::endl << "K rows = " << k.rows() <<  std::endl << "K cols = " << k.cols() << std::endl;
+}
+catch (const std::exception& e){
+	std::cerr << "Caught exception : " << e.what() << std::endl;
 }

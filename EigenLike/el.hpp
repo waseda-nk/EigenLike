@@ -1,6 +1,7 @@
 #ifndef __EL_HPP__
 #define __EL_HPP__
 
+#include <stdexcept>
 #include <iostream>
 
 /**
@@ -43,7 +44,7 @@ namespace el {
 			vector<T, Size>& v;
 			int i;
 			initializer(vector<T, Size>& _v, int _i) : v(_v), i(_i) {
-				if (i > Size) throw("Out of range");
+				if (i > Size) throw std::logic_error("too much arguments");
 			}
 			initializer operator,(T x) noexcept {
 				v._data[i % Size] = x;
@@ -214,10 +215,10 @@ namespace el {
 			matrix<T, Rows, Cols>& m;
 			int i;
 			initializer(matrix<T, Rows, Cols>& _m, int _i) : m(_m), i(_i) {
-				if (i > Rows*Cols) throw("Out of range");
+				if (i > Rows*Cols) throw std::logic_error("too much arguments");
 			}
 			initializer operator,(const T x) {
-				m._data[i/m.rows()][i%m.cols()] = x;
+				m._data[i/m.cols()][i%m.rows()] = x;
 				return initializer(m, i + 1);
 			}
 		};
@@ -254,19 +255,19 @@ namespace el {
 		 */
 		friend std::ostream& operator<<(std::ostream& os, const matrix m) {
 			os << "[";
-			for (int i = 0; i < m.rows(); ++i) {
+			for (int i = 0; i < m.cols(); ++i) {
 				if (i != 0)
 					os << " ";
 				os << "[";
-				for (int j = 0; j < m.cols(); ++j) {
+				for (int j = 0; j < m.rows(); ++j) {
 					if (j != 0)
 						os << " ";
 					os << m[i][j];
-					if (j != m.cols() - 1)
+					if (j != m.rows() - 1)
 						os << ", ";
 				}
 				os << "]";
-				if (i != m.rows() - 1)
+				if (i != m.cols() - 1)
 					os << "," << std::endl;
 			}
 			os << "]" << std::endl;
@@ -281,10 +282,10 @@ namespace el {
 		 */
 		friend matrix operator+(const matrix& m1, const matrix& m2) {
 			if (m1.rows() != m2.rows() && m1.cols() != m2.cols())
-				throw("Not same size");
+				throw std::logic_error("Not same size");
 			matrix<T, Rows, Cols> r;
-			for (int i = 0; i < m1.rows(); ++i)
-				for (int j = 0; j < m1.cols(); ++j)
+			for (int i = 0; i < m1.cols(); ++i)
+				for (int j = 0; j < m1.rows(); ++j)
 					r[i][j] = m1[i][j] + m2[i][j];
 			return r;
 		}
@@ -296,9 +297,9 @@ namespace el {
 		 */
 		inline matrix& operator+=(const matrix& m) {
 			if (_rows != m.rows() && _cols != m.cols())
-				throw("Not same size");
-			for (int i = 0; i < _rows; ++i)
-				for (int j = 0; j < _cols; ++j)
+				throw std::logic_error("Not same size");
+			for (int i = 0; i < _cols; ++i)
+				for (int j = 0; j < _rows; ++j)
 					_data[i][j] += m[i][j];
 			return *this;
 		}
@@ -311,10 +312,10 @@ namespace el {
 		 */
 		friend matrix operator-(const matrix& m1, const matrix& m2) {
 			if (m1.rows() != m2.rows() && m1.cols() != m2.cols())
-				throw("Not same size");
+				throw std::logic_error("Not same size");
 			matrix<T, Rows, Cols> r;
-			for (int i = 0; i < m1.rows(); ++i)
-				for (int j = 0; j < m1.cols(); ++j)
+			for (int i = 0; i < m1.cols(); ++i)
+				for (int j = 0; j < m1.rows(); ++j)
 					r[i][j] = m1[i][j] - m2[i][j];
 			return r;
 		}
@@ -326,9 +327,9 @@ namespace el {
 		 */
 		inline matrix& operator-=(const matrix& m) {
 			if (_rows != m.rows() && _cols != m.cols())
-				throw("Not same size");
-			for (int i = 0; i < _rows; ++i)
-				for (int j = 0; j < _cols; ++j)
+				throw std::logic_error("Not same size");
+			for (int i = 0; i < _cols; ++i)
+				for (int j = 0; j < _rows; ++j)
 					_data[i][j] -= m[i][j];
 			return *this;
 		}
@@ -341,8 +342,8 @@ namespace el {
 		 */
 		 friend matrix operator*(const T& n, const matrix& m) {
 			matrix<T, Rows, Cols> r;
-			for (int i = 0; i < m.rows(); ++i)
-				for (int j = 0; j < m.cols(); ++j)
+			for (int i = 0; i < m.cols(); ++i)
+				for (int j = 0; j < m.rows(); ++j)
 					r[i][j] = n * m[i][j];
 			return r;
 		}
@@ -355,8 +356,8 @@ namespace el {
 		 */
 		 friend matrix operator*(const matrix& m, const T& n) {
 			matrix<T, Rows, Cols> r;
-			for (int i = 0; i < m.rows(); ++i)
-				for (int j = 0; j < m.cols(); ++j)
+			for (int i = 0; i < m.cols(); ++i)
+				for (int j = 0; j < m.rows(); ++j)
 					r[i][j] = n * m[i][j];
 			return r;
 		}
@@ -367,8 +368,8 @@ namespace el {
 		 * @return mul of number and matrix
 		 */
 		inline matrix& operator*=(const T& n) {
-			for (int i = 0; i < _rows; ++i)
-				for (int j = 0; j < _cols; ++j)
+			for (int i = 0; i < _cols; ++i)
+				for (int j = 0; j < _rows; ++j)
 					_data[i][j] *= n;
 			return *this;
 		}
@@ -381,7 +382,7 @@ namespace el {
 		 */
 		friend matrix operator*(const matrix& m1, const matrix& m2) {
 			if (m1.cols() != m2.rows())
-				throw("Left matrix rows is not same Right matrix cols");
+				throw std::logic_error("Left matrix rows is not same Right matrix cols");
 			matrix<T, Rows, Cols> r;
 			for (int i = 0; i < m1.rows(); ++i)
 				for (int j = 0; j < m2.cols(); ++j)
@@ -397,7 +398,7 @@ namespace el {
 		 */
 		inline matrix& operator*=(const matrix& m) {
 			if (_cols != m.rows())
-				throw("Left matrix rows is not same Right matrix cols");
+				throw std::logic_error("Left matrix rows is not same Right matrix cols");
 			matrix<T, Rows, Cols> r;
 			for (int i = 0; i < _rows; ++i)
 				for (int j = 0; j < m.cols(); ++j)
@@ -415,11 +416,11 @@ namespace el {
 		 */
 		friend matrix operator*=(const matrix& m1, const matrix& m2) {
 			if (m1.cols() != m2.rows())
-				throw("Left matrix rows is not same Right matrix cols");
+				throw std::logic_error("Left matrix rows is not same Right matrix cols");
 			matrix<T, Rows, Cols> r;
 			for (int i = 0; i < m1.rows(); ++i)
 				for (int j = 0; j < m2.cols(); ++j)
-					for (int k=0;k< m1.cols(); ++k)
+					for (int k = 0; k <  m1.cols(); ++k)
 						r[i][j] += m1[i][k] * m2[k][j];
 			return r;
 		}
@@ -432,8 +433,8 @@ namespace el {
 		 */
 		friend matrix operator/(const matrix& m, const T& n) {
 			matrix<T, Rows, Cols> r;
-			for (int i = 0; i < m.rows(); ++i)
-				for (int j = 0; j < m.cols(); ++j)
+			for (int i = 0; i < m.cols(); ++i)
+				for (int j = 0; j < m.rows(); ++j)
 					r[i][j] = m[i][j] / n;
 			return r;
 		}
@@ -444,8 +445,8 @@ namespace el {
 		 * @return div of number and matrix
 		 */
 		inline matrix& operator/=(const T& n) {
-			for (int i = 0; i < _rows; ++i)
-				for (int j = 0; j < _cols; ++j)
+			for (int i = 0; i < _cols; ++i)
+				for (int j = 0; j < _rows; ++j)
 					_data[i][j] /= n;
 			return *this;
 		}
@@ -456,8 +457,8 @@ namespace el {
 		 */
 		static matrix<T, Rows, Cols> zero() {
 			matrix<T, Rows, Cols> m;
-			for (int i = 0; i < Rows; ++i)
-				for (int j = 0; j < Cols; ++j)
+			for (int i = 0; i < Cols; ++i)
+				for (int j = 0; j < Rows; ++j)
 					m[i][j] = 0;
 			return m;
 		}
@@ -465,11 +466,11 @@ namespace el {
 		 * @fn     void identity()
 		 * @brief  identity matrix
 		 */
-		static matrix<T, Rows, Cols> identity(T n = 1) {
-			if (Rows != Cols) throw("Not square matrix");
+		static matrix<T, Rows, Cols> identity(T n = 1) noexcept {
+			if (Rows != Cols) throw std::logic_error("Not square matrix");
 			matrix<T, Rows, Cols> m;
 			m = matrix<T, Rows, Cols>::zero();
-			for (int i = 0; i < Rows; ++i)
+			for (int i = 0; i < Cols; ++i)
 				m[i][i] = n;
 			return m;
 		}
@@ -478,10 +479,10 @@ namespace el {
 		 * @brief  exchange matrix
 		 */
 		static matrix<T, Rows, Cols> exchange(T n = 1) {
-			if (Rows != Cols) throw("Not square matrix");
+			if (Rows != Cols) throw std::logic_error("Not square matrix");
 			matrix<T, Rows, Cols> m;
 			m = matrix<T, Rows, Cols>::zero();
-			for (int i = 0; i < Rows; ++i)
+			for (int i = 0; i < Cols; ++i)
 				m[i][Rows-i-1] = n;
 			return m;
 		}
@@ -491,8 +492,8 @@ namespace el {
 		 */
 		static matrix<T, Rows, Cols> ones(T n = 1) {
 			matrix<T, Rows, Cols> m;
-			for (int i = 0; i < Rows; ++i)
-				for (int j = 0; j < Cols; ++j)
+			for (int i = 0; i < Cols; ++i)
+				for (int j = 0; j < Rows; ++j)
 					m[i][j] = n;
 			return m;
 		}
@@ -501,10 +502,10 @@ namespace el {
 		 * @brief  hilbelt matrix
 		 */
 		static matrix<T, Rows, Cols> hilbelt(T n = 1) {
-			if (Rows != Cols) throw("Not square matrix");
+			if (Rows != Cols) throw std::logic_error("Not square matrix");
 			matrix<T, Rows, Cols> m;
-			for (int i = 0; i < Rows; ++i)
-				for (int j = 0; j < Cols; ++j)
+			for (int i = 0; i < Cols; ++i)
+				for (int j = 0; j < Rows; ++j)
 					m[i][j] = n / (i + j + 1);
 			return m;
 		}
