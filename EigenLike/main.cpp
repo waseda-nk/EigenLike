@@ -1,5 +1,5 @@
 #include "el.hpp"
-#include <eigen3/Eigen/Core>
+#include <Eigen/Core>
 #include <iostream>
 
 int main(void) try {
@@ -7,10 +7,11 @@ int main(void) try {
 	double a = 1;
 	v << 2, 3, 4;
 	std::cout << "a = " << a << std::endl << std::endl;
+	std::cout << "v = " << std::endl << v << std::endl;
 	a = v.x();
 	v.x() = 5;
-	std::cout << "v = " << std::endl << v << std::endl;
 	std::cout << "a = " << a << std::endl << std::endl;
+	std::cout << "v = " << std::endl << v << std::endl;
 
 	el::matrix<double, 4, 4> m, y, g;
 	std::cout << "m = " << std::endl << m << std::endl;

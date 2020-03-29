@@ -9,177 +9,6 @@
  * @brief     data stored namespace
  */
 namespace el {
-
-	/**
-	 * @struct vector
-	 * @brief  vector
-	 */
-	template<typename T, int Size>
-	struct vector {
-		/**
-		 * @brief  constructor
-		 */
-		vector() : _size(Size) {
-			_data = new T[_size];
-			for (int i = 0; i < _size; ++i)
-				_data[i] = T(0);
-		}
-		/**
-		 * @brief  constructor
-		 */
-		vector(T ) : _size(Size) {
-			_data = new T[_size];
-			for (int i = 0; i < _size; ++i)
-				_data[i] = T(0);
-		}
-		/**
-		 * @brief  destructor
-		 */
-		~vector() {}
-
-		/**
-		 * @struct initializer
-		 */
-		struct initializer {
-			vector<T, Size>& v;
-			int i;
-			initializer(vector<T, Size>& _v, int _i) : v(_v), i(_i) {
-				if (i > Size) throw std::logic_error("too much arguments");
-			}
-			initializer operator,(T x) noexcept {
-				v._data[i % Size] = x;
-				return initializer(v, i + 1);
-			}
-		};
-		/**
-		 * @fn        initializer operator<<(T x)
-		 * @param[in] x element number
-		 * @return    element
-		 */
-		initializer operator<<(T x) noexcept {
-			_data[0] = x;
-			return initializer(*this, 1);
-		}
-
-		/**
-		 * @fn        T& operator()(int idx)
-		 * @param[in] idx element number
-		 * @return    element
-		 */
-		T& operator()(int idx) { return _data[idx]; }
-
-		/**
-		 * @fn        const T operator()(int idx) const
-		 * @param[in] idx element number
-		 * @return    element
-		 */
-		const T operator()(int idx) const { return _data[idx]; }
-
-		/**
-		 * @fn        T& operator[](int idx)
-		 * @param[in] idx element number
-		 * @return    element
-		 */
-		T& operator[](int idx) { return _data[idx]; }
-
-		/**
-		 * @fn        const T operator[](int idx) const
-		 * @param[in] idx element number
-		 * @return    element
-		 */
-		const T operator[](int idx) const { return _data[idx]; }
-
-		/**
-		 * @fn        friend std::ostream& operator<<(std::ostream& os, vector<T, Size>& v)
-		 * @param[in]  os output stream
-		 * @param[in]  v  vector
-		 * @return    output stream
-		 */
-		friend std::ostream& operator<<(std::ostream& os, vector<T, Size>& v) {
-			os << "[";
-			for (int i = 0; i < v.size(); ++i) {
-				if (i != 0)
-					os << " ";
-				os << v[i];
-				if (i != v.size() - 1)
-					os << ", " << std::endl;
-			}
-			os << "]" << std::endl;
-			return os;
-		}
-
-		/**
-		 * @fn     int size()
-		 * @return vector size
-		 */
-		int size() { return _size; }
-
-		/**
-		 * @fn     T& x()
-		 * @return x
-		 */
-		T& x() noexcept { return _data[0]; }
-		/**
-		 * @fn     const T x() const
-		 * @return x
-		 */
-		const T x() const noexcept { return _data[0]; }
-		/**
-		 * @fn     T& y()
-		 * @return y
-		 */
-		T& y() noexcept { return _data[1]; }
-		/**
-		 * @fn     const T y() const
-		 * @return y
-		 */
-		const T y() const noexcept { return _data[1]; }
-		/**
-		 * @fn     T& z()
-		 * @return z
-		 */
-		T& z() noexcept { return _data[2]; }
-		/**
-		 * @fn     const T z() const
-		 * @return z
-		 */
-		const T z() const noexcept { return _data[2]; }
-		/**
-		 * @fn     T& w()
-		 * @return w
-		 */
-		T& w() noexcept { return _data[3]; }
-		/**
-		 * @fn     const T w() const
-		 * @return w
-		 */
-		const T w() const noexcept { return _data[3]; }
-
-		/**
-		 * @fn     void zero()
-		 * @brief  zero vector
-		 */
-		static vector<T, Size> zero() {
-			vector<T, Size> v;
-			for (int i = 0; i < Size; ++i)
-				v[i] = T(0);
-			return v;
-		}
-		/**
-		 * @fn     void ones()
-		 * @brief  vector of ones
-		 */
-		static vector<T, Size> ones(T n = 1) {
-			vector<T, Size> v;
-			for (int i = 0; i < Size; ++i)
-				v[i] = n;
-			return v;
-		}
-	protected:
-		int _size;  /**< vector size */
-		T *_data;   /**< stored vector data */
-	};
-
 	/**
 	 * @struct matrix
 	 * @brief  matrix
@@ -196,10 +25,10 @@ namespace el {
 		 * @brief  constructor
 		 */
 		matrix() : _rows(Rows), _cols(Cols) {
-			_data = new T*[_cols];
-			for (int i = 0; i < _cols; ++i) {
-				_data[i] = new T[_rows];
-				for (int j = 0; j < _rows; ++j)
+			_data = new T*[_rows];
+			for (int i = 0; i < _rows; ++i) {
+				_data[i] = new T[_cols];
+				for (int j = 0; j < _cols; ++j)
 					_data[i][j] = T(0);
 			}
 		}
@@ -262,7 +91,7 @@ namespace el {
 				for (int j = 0; j < m.rows(); ++j) {
 					if (j != 0)
 						os << " ";
-					os << m[i][j];
+					os << m[j][i];
 					if (j != m.rows() - 1)
 						os << ", ";
 				}
@@ -543,6 +372,55 @@ namespace el {
 		 */
 		const int cols() const { return _cols; }
 	};
+
+	/**
+	 * @struct vector
+	 * @brief  vector
+	 */
+	template<typename T, int Size>
+	struct vector : public matrix<T, 1, Size> {
+		/**
+		 * @fn     T& x()
+		 * @return x
+		 */
+		T& x() noexcept { return this->_data[0][0]; }
+		/**
+		 * @fn     const T x() const
+		 * @return x
+		 */
+		const T x() const noexcept { return this->_data[0][0]; }
+		/**
+		 * @fn     T& y()
+		 * @return y
+		 */
+		T& y() noexcept { return this->_data[1][0]; }
+		/**
+		 * @fn     const T y() const
+		 * @return y
+		 */
+		const T y() const noexcept { return this->_data[1][0]; }
+		/**
+		 * @fn     T& z()
+		 * @return z
+		 */
+		T& z() noexcept { return this->_data[2][0]; }
+		/**
+		 * @fn     const T z() const
+		 * @return z
+		 */
+		const T z() const noexcept { return this->_data[2][0]; }
+		/**
+		 * @fn     T& w()
+		 * @return w
+		 */
+		T& w() noexcept { return this->_data[3][0]; }
+		/**
+		 * @fn     const T w() const
+		 * @return w
+		 */
+		const T w() const noexcept { return this->_data[3][0]; }
+	};
+
 
 	/**
 	 * @struct K
